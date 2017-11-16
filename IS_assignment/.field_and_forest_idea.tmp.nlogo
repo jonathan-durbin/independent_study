@@ -46,7 +46,7 @@ end
 to place-turtles
   (foreach rel_abundance_vec_1 index_vec_1
     [ [i j] -> crt i * abundance1 [
-      set color (j + 44)
+      set color (j9 + 44)
       set species j
       setxy random-float max-pxcor random-ycor
   ] ] )
@@ -99,7 +99,7 @@ to take-sample
   print sampled_vec_1
   write "Vec2"
   print sampled_vec_2
-
+  print ""
 
 end
 @#$#@#$#@
