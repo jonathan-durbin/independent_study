@@ -8,8 +8,13 @@ read comittment
 
 git commit -m "$comittment"
 
-echo "pushing"
+echo "do you want to push? (y/n) "
 
-git push
+read push
 
-
+if [ "$push" == "y" ]; then
+	echo "pushing"
+	git push
+else
+	echo "will not push"
+fi
