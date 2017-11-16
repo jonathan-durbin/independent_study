@@ -82,15 +82,24 @@ to take-sample
 
   if (mouse-xcor > 0) [
     set sampled_vec_1 [ sort [species] of turtles in-radius 5 ] of patch mouse-xcor mouse-ycor
-    ;visual feedback so we can see where we'r
+
+    ;visual feedback so we can see where we're sampling
     ask [patches in-radius 5] of patch mouse-xcor mouse-ycor [set pcolor pink]
-;    (foreach sampled_vec_1 sampling_vec_1
-;      [ [i j] ->
+
   ]
 
   if (mouse-xcor < 0) [
     set sampled_vec_2 [ sort [species] of turtles in-radius 2 ] of patch mouse-xcor mouse-ycor
+
+    ;visual feedback so we can see where we're sampling
+    ask [patches in-radius 5] of patch mouse-xcor mouse-ycor [set pcolor pink]
   ]
+
+  write "Vec1"
+  print sampled_vec_1
+  write "Vec2"
+  print sampled_vec_2
+
 
 end
 @#$#@#$#@
