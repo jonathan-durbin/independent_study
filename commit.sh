@@ -1,5 +1,15 @@
+echo "adding everything"
+
 git add .
 
-git commit -m "here's what I did"
+echo "describe your comittment: "
+
+read comittment
+
+git commit -m "$comittment"
+
+echo "pushing"
 
 git push
+
+
