@@ -13,9 +13,13 @@ globals [
 ]
 
 ;NOTE: "2" refers to left side, "1" to right side
+;******************NOTE: Can we switch that? It's counterintuitive. -Ben *************************************************************;
 
 turtles-own [
   species
+
+  ;site refers to which site they live in
+  site
 ]
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -25,10 +29,15 @@ turtles-own [
 to setup
   ca
   setup-vars
+  setup-patches
+  place-turtles
+end
+
+;added this method so we can call it in the sample
+to setup-patches
   ask patches with [ pxcor >= 1 ] [set pcolor blue]
   ask patches with [ pxcor = 0 ] [set pcolor white]
   ask patches with [ pxcor <= -1 ] [set pcolor red]
-  place-turtles
 end
 
 to setup-vars
@@ -46,15 +55,17 @@ end
 to place-turtles
   (foreach rel_abundance_vec_1 index_vec_1
     [ [i j] -> crt i * abundance1 [
-      set color (j9 + 44)
+      set color (j * 9 )
       set species j
+      set site 1
       setxy random-float max-pxcor random-ycor
   ] ] )
 
   (foreach rel_abundance_vec_2 index_vec_2
     [ [i j] -> crt i * abundance2 [
-      set color (j + 60)
+      set color (j * 9 + 50)
       set species j
+      set site 2
       setxy random-float -1 * max-pxcor random-ycor
   ] ] )
   ask turtles with [xcor < 1 and xcor > -1] [die]
@@ -76,12 +87,10 @@ end
 
 to take-sample
   ;reset patch colors
-  ask patches with [ pxcor >= 1 ] [set pcolor blue]
-  ask patches with [ pxcor = 0 ] [set pcolor white]
-  ask patches with [ pxcor <= -1 ] [set pcolor red]
+  setup-patches
 
   if (mouse-xcor > 0) [
-    set sampled_vec_1 [ sort [species] of turtles in-radius 5 ] of patch mouse-xcor mouse-ycor
+    set sampled_vec_1 [ sort [species] of turtles in-radius 5  ] of patch mouse-xcor mouse-ycor
 
     ;visual feedback so we can see where we're sampling
     ask [patches in-radius 5] of patch mouse-xcor mouse-ycor [set pcolor pink]
