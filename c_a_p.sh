@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo "adding everything"
 
 git add .
