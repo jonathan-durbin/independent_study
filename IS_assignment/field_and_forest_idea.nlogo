@@ -10,6 +10,7 @@ globals [
   sampling_vec_1
   sampled_vec_2
   sampling_vec_2
+  mylist
 ]
 
 ;NOTE: "2" refers to left side, "1" to right side
@@ -49,7 +50,9 @@ to setup-vars
   set index_vec_2 [0 1 2]
   set abundance2 1000
   set sampling_vec_1 [0 0 0 0]
+  set sampled_vec_1 [0]
   set sampling_vec_2 [0 0 0]
+  set sampled_vec_2 [0]
 end
 
 to place-turtles
@@ -76,6 +79,7 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
 to go
+  ;; This runs the command "take-sample" every time the mouse button is pressed down, and only once, until the button is pressed again.
   ifelse mouse-down? [
     if not mouse-clicked? [
       set mouse-clicked? true
@@ -83,6 +87,12 @@ to go
     ]
   ]
   [set mouse-clicked? false]
+end
+
+;; This counts how many indexes in "the-list" are the same as "x"
+to-report occurrences [x the-list]
+  report reduce
+    [ [occurrence-count next-item] -> ifelse-value (next-item = x) [occurrence-count + 1] [occurrence-count] ] (fput 0 the-list)
 end
 
 to take-sample
@@ -109,6 +119,14 @@ to take-sample
   write "Vec2"
   print sampled_vec_2
   print ""
+
+  set sampling_vec_1 (list (occurrences 0 sampled_vec_1) (occurrences 1 sampled_vec_1) (occurrences 2 sampled_vec_1) (occurrences 3 sampled_vec_1) )
+  set sampling_vec_2 (list (occurrences 0 sampled_vec_2) (occurrences 1 sampled_vec_2) (occurrences 2 sampled_vec_2) (occurrences 3 sampled_vec_2) (occurrences 4 sampled_vec_2) )
+
+  write "sampling_vec_1"
+  print sampling_vec_1
+  write "sampling_vec_2"
+  print sampling_vec_2
 
 end
 @#$#@#$#@
