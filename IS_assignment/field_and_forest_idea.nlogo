@@ -128,6 +128,8 @@ to take-sample
   write "sampling_vec_2"
   print sampling_vec_2
 
+  plotxy (sum sampling_vec_1) (length sampling_vec_1)
+  update-plots
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -198,11 +200,11 @@ PLOT
 567
 plot 1
 NIL
-NIL
+1
 0.0
-10.0
+1.0
 0.0
-10.0
+1.0
 true
 false
 "" ""
