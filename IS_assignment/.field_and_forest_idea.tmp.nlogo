@@ -1,27 +1,30 @@
 globals [
+  index ; hardcoding of a forloop
+  mouse-clicked?
+
+
   rel_abundance_vec_1
   abundance1
+  index_vec_1
+  sampled_vec_1
+  sampling_vec_1
+  new_sample_vec_1
+  new_sample_vec_1_init
+  num_species_1
+  sum_abundance_1
+
 
   rel_abundance_vec_2
   abundance2
-
-  index_vec_1
   index_vec_2
-
-  mouse-clicked?
-
-  sampled_vec_1
-  sampling_vec_1
-
   sampled_vec_2
   sampling_vec_2
-
-  mylist
-
-  new_sample_vec_1
   new_sample_vec_2
+  new_sample_vec_2_init
+  num_species_2
+  sum_abundance_2
 
-  new_sample_vec_1_init
+
 ]
 
 ;NOTE: "2" refers to left side, "1" to right side
@@ -54,23 +57,112 @@ end
 
 to setup-vars
   ;;all vectors with a number attached (i.e. vec_1) need to be the same length
-  set rel_abundance_vec_1 [.2 .5 .2 .1]
-  set index_vec_1 [0 1 2 3]
-  set abundance1 100
-  set sampling_vec_1 [0 0 0 0]
-  set sampled_vec_1 [-1]
-  set new_sample_vec_1_init [0 0 0 0]
-  set new_sample_vec_1 new_sample_vec_1_init
+  set index 0
+  set abundance1 1000
+  set abundance2 100
+  set num_species_1 50
+  set num_species_2 100
 
-  set rel_abundance_vec_2 [.3 .2 .5]
-  set index_vec_2 [0 1 2]
-  set abundance2 1000
-  set sampling_vec_2 [0 0 0]
+
+
+  set sampled_vec_1 [-1]
   set sampled_vec_2 [-1]
-  set new_sample_vec_2 [0 0 0]
+
+ ; set rel_abundance_vec_1 []
+
+ ; set rel_abundance_vec_2 []
+
+  initialize-vectors
+
+ ; write sum rel_abundance_vec_1
+
+
+;  set sampling_vec_1 [0 0 0 0]
+;  set sampled_vec_1 [-1]
+;  set new_sample_vec_1_init [0 0 0 0]
+;  set new_sample_vec_1 new_sample_vec_1_init
+;
+;
+;
+;  set sampling_vec_2 [0 0 0]
+;  set sampled_vec_2 [-1]
+;  set new_sample_vec_2 [0 0 0]
 end
 
+
+to initialize-vectors
+  set sampling_vec_1 []
+  set rel_abundance_vec_1 []
+  set new_sample_vec_1_init[]
+  set index_vec_1 []
+
+  set sampling_vec_2 []
+  set rel_abundance_vec_2 []
+  set new_sample_vec_2_init[]
+  set index_vec_2 []
+
+  repeat num_species_1 [
+
+    ;set rel_abundance_vec_1 lput
+    set sampling_vec_1 lput 0 sampling_vec_1
+
+
+    set rel_abundance_vec_1 lput random-float 1 rel_abundance_vec_1
+    ; set sampled_vec_1 lput -1 sampled_vec_1
+    set new_sample_vec_1_init lput 0 new_sample_vec_1_init
+    set new_sample_vec_1 new_sample_vec_1_init
+
+    ]
+
+  repeat num_species_2 [
+
+    ;set rel_abundance_vec_2 lput
+    set sampling_vec_2 lput 0 sampling_vec_2
+    set rel_abundance_vec_2 lput random-float 1 rel_abundance_vec_2
+    set sampled_vec_2 lput -1 sampled_vec_2
+    set new_sample_vec_2_init lput 0 new_sample_vec_2_init
+    set new_sample_vec_2 new_sample_vec_2_init
+
+    ]
+
+  set sum_abundance_1 sum rel_abundance_vec_1
+  set sum_abundance_2 sum rel_abundance_vec_2
+
+;
+;  foreach rel_abundance_vec_1 [
+;    i -> i / sum_abundance_1
+;  ]
+;
+;  foreach rel_abundance_vec_2 [
+;    i -> i/sum_abundance_2
+;  ]
+
+  set index 0
+  repeat num_species_1 [
+    set rel_abundance_vec_1 replace-item index rel_abundance_vec_1 (item index rel_abundance_vec_1 / sum_abundance_1 )
+
+    set index_vec_1 lput index index_vec_1
+
+    set index (index + 1)
+
+  ]
+  set index 0
+  repeat num_species_2 [
+    set rel_abundance_vec_2 replace-item index rel_abundance_vec_2 (item index rel_abundance_vec_2 / sum_abundance_2 )
+
+    set index_vec_2 lput index index_vec_2
+
+    set index (index + 1)
+
+  ]
+
+end
+
+
 to place-turtles
+
+
+
   (foreach rel_abundance_vec_1 index_vec_1
     [ [i j] -> crt i * abundance1 [
       set color (j * 9 )
@@ -80,7 +172,7 @@ to place-turtles
   ] ] )
 
   (foreach rel_abundance_vec_2 index_vec_2
-    [ [i j] -> crt i * abundance2 [
+    [ [i j] -> ccrt i * abundance2 [
       set color (j * 9 + 50)
       set species j
       set site 2
@@ -123,54 +215,47 @@ to take-sample
   ]
 
   if (mouse-xcor < 0) [
-    set sampled_vec_2 [ sort [species] of turtles in-radius 2 ] of patch mouse-xcor mouse-ycor
+    set sampled_vec_2 [ sort [species] of turtles in-radius 2 with [site = 2] ] of patch mouse-xcor mouse-ycor
 
     ;visual feedback so we can see where we're sampling
     ask [patches in-radius 5] of patch mouse-xcor mouse-ycor [set pcolor pink]
   ]
 
-;  write "Vec1"
-;  print sampled_vec_1
-;  write "Vec2"
-;  print sampled_vec_2
-;  print ""
-
+;;$$$$$$$$$$$$$$$$
   foreach index_vec_1 [
-    i -> set new_sample_vec_1 replace-item i new_sample_vec_1 occurrences i sampled_vec_1        ;;;;(item i new_sample_vec_1) (occurrences i sampled_vec_1)
+    i -> set new_sample_vec_1 replace-item i new_sample_vec_1 occurrences i sampled_vec_1
+  ]
+;$$$$$$$$$$$$$$$$$$$$
+ ; write new_sample_vec_1
+
+
+  set index 0
+
+  repeat num_species_1 [
+    set sampling_vec_1 replace-item index sampling_vec_1 (item index sampling_vec_1 + occurrences index sampled_vec_1)
+    set index (index + 1)
   ]
 
-  write new_sample_vec_1
+  set index 0
+  repeat num_species_2 [
+    set sampling_vec_2 replace-item index sampling_vec_2 (item index sampling_vec_2 + occurrences index sampled_vec_2)
+    set index (index + 1)
+  ]
 
-  set sampling_vec_1 (map + sampling_vec_1 (list (occurrences 0 sampled_vec_1)
-                                                 (occurrences 1 sampled_vec_1)
-                                                 (occurrences 2 sampled_vec_1)
-                                                 (occurrences 3 sampled_vec_1)))
-
-  set sampling_vec_2 (map + sampling_vec_2 (list (occurrences 0 sampled_vec_2)
-                                                 (occurrences 1 sampled_vec_2)
-                                                 (occurrences 2 sampled_vec_2)))
-
+;  set sampling_vec_1 (map + sampling_vec_1 (list (occurrences 0 sampled_vec_1)
+;                                                 (occurrences 1 sampled_vec_1)
+;                                                 (occurrences 2 sampled_vec_1)
+;                                                 (occurrences 3 sampled_vec_1)))
 ;
-;  set sampling_vec_1 (list (occurrences 0 sampled_vec_1)
-;                           (occurrences 1 sampled_vec_1)
-;                           (occurrences 2 sampled_vec_1)
-;                           (occurrences 3 sampled_vec_1) )
-;
-;  set sampling_vec_2 (list (occurrences 0 sampled_vec_2)
-;                           (occurrences 1 sampled_vec_2)
-;                           (occurrences 2 sampled_vec_2)
-;                           (occurrences 3 sampled_vec_2)
-;                           (occurrences 4 sampled_vec_2) )
-;
-;  write "sampling_vec_1"
-  print sampling_vec_1
-  write "sampling_vec_2"
-  print sampling_vec_2
+;  set sampling_vec_2 (map + sampling_vec_2 (list (occurrences 0 sampled_vec_2)
+;                                                 (occurrences 1 sampled_vec_2)
+;                                                 (occurrences 2 sampled_vec_2)))
 
-  set sampled_vec_1 [-1 -1 -1 -1]
-  set sampled_vec_2 [-1 -1 -1]
 
-  set new_sample_vec_1 new_sample_vec_1_init
+  set sampled_vec_1 [-1]
+  set sampled_vec_2 [-1]
+
+;  set new_sample_vec_1 new_sample_vec_1_init
 
   update-plots
 end
@@ -252,7 +337,7 @@ true
 false
 "" ""
 PENS
-"default" 1.0 0 -13791810 true "" "plotxy (sum sampling_vec_1) (length remove 0 sampling_vec_1)"
+"default" 1.0 0 -13791810 true "" "plotxy (sum sampling_vec_1 * (abundance2 / abundance1)) (length remove 0 sampling_vec_1)"
 "pen-1" 1.0 0 -2674135 true "" "plotxy (sum sampling_vec_2) (length remove 0 sampling_vec_2)"
 
 @#$#@#$#@
