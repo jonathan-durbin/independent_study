@@ -56,41 +56,22 @@ to setup-patches
 end
 
 to setup-vars
-  ;;all vectors with a number attached (i.e. vec_1) need to be the same length
   set index 0
-  set abundance1 1000
+
+  set abundance1 1000  ;total number of turtles
   set abundance2 100
-  set num_species_1 50
+  set num_species_1 50 ;number of species in each side
   set num_species_2 100
-
-
 
   set sampled_vec_1 [-1]
   set sampled_vec_2 [-1]
 
- ; set rel_abundance_vec_1 []
-
- ; set rel_abundance_vec_2 []
-
   initialize-vectors
-
- ; write sum rel_abundance_vec_1
-
-
-;  set sampling_vec_1 [0 0 0 0]
-;  set sampled_vec_1 [-1]
-;  set new_sample_vec_1_init [0 0 0 0]
-;  set new_sample_vec_1 new_sample_vec_1_init
-;
-;
-;
-;  set sampling_vec_2 [0 0 0]
-;  set sampled_vec_2 [-1]
-;  set new_sample_vec_2 [0 0 0]
 end
 
 
 to initialize-vectors
+
   set sampling_vec_1 []
   set rel_abundance_vec_1 []
   set new_sample_vec_1_init[]
@@ -100,15 +81,13 @@ to initialize-vectors
   set rel_abundance_vec_2 []
   set new_sample_vec_2_init[]
   set index_vec_2 []
-
+;initializing vectors with 0's
   repeat num_species_1 [
 
-    ;set rel_abundance_vec_1 lput
     set sampling_vec_1 lput 0 sampling_vec_1
-
-
+; set relative abundances to be random, trusted that we would only need to tweak total abundances and number of species to get desired curves
     set rel_abundance_vec_1 lput random-float 1 rel_abundance_vec_1
-    ; set sampled_vec_1 lput -1 sampled_vec_1
+
     set new_sample_vec_1_init lput 0 new_sample_vec_1_init
     set new_sample_vec_1 new_sample_vec_1_init
 
@@ -128,16 +107,8 @@ to initialize-vectors
   set sum_abundance_1 sum rel_abundance_vec_1
   set sum_abundance_2 sum rel_abundance_vec_2
 
-;
-;  foreach rel_abundance_vec_1 [
-;    i -> i / sum_abundance_1
-;  ]
-;
-;  foreach rel_abundance_vec_2 [
-;    i -> i/sum_abundance_2
-;  ]
-
   set index 0
+;Here, we normalize our relative_abundance_vectors
   repeat num_species_1 [
     set rel_abundance_vec_1 replace-item index rel_abundance_vec_1 (item index rel_abundance_vec_1 / sum_abundance_1 )
 
@@ -161,10 +132,8 @@ end
 
 to place-turtles
 
-
-
   (foreach rel_abundance_vec_1 index_vec_1
-    [ [i j] -> crt i * abundance1 [
+    [ [i j] -> crt ceiling (i * abundance1) [
       set color (j * 9 )
       set species j
       set site 1
@@ -172,7 +141,7 @@ to place-turtles
   ] ] )
 
   (foreach rel_abundance_vec_2 index_vec_2
-    [ [i j] ->  crt ceiling(i * abundance2) [
+    [ [i j] ->  crt ceiling (i * abundance2) [
       set color (j * 9 + 50)
       set species j
       set site 2
@@ -221,13 +190,9 @@ to take-sample
     ask [patches in-radius 5] of patch mouse-xcor mouse-ycor [set pcolor pink]
   ]
 
-;;$$$$$$$$$$$$$$$$
   foreach index_vec_1 [
     i -> set new_sample_vec_1 replace-item i new_sample_vec_1 occurrences i sampled_vec_1
   ]
-;$$$$$$$$$$$$$$$$$$$$
- ; write new_sample_vec_1
-
 
   set index 0
 
@@ -241,21 +206,9 @@ to take-sample
     set sampling_vec_2 replace-item index sampling_vec_2 (item index sampling_vec_2 + occurrences index sampled_vec_2)
     set index (index + 1)
   ]
-
-;  set sampling_vec_1 (map + sampling_vec_1 (list (occurrences 0 sampled_vec_1)
-;                                                 (occurrences 1 sampled_vec_1)
-;                                                 (occurrences 2 sampled_vec_1)
-;                                                 (occurrences 3 sampled_vec_1)))
-;
-;  set sampling_vec_2 (map + sampling_vec_2 (list (occurrences 0 sampled_vec_2)
-;                                                 (occurrences 1 sampled_vec_2)
-;                                                 (occurrences 2 sampled_vec_2)))
-
-
+;resetting sampled vec
   set sampled_vec_1 [-1]
   set sampled_vec_2 [-1]
-
-;  set new_sample_vec_1 new_sample_vec_1_init
 
   update-plots
 end
